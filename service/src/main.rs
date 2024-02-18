@@ -1,6 +1,7 @@
 #[tokio::main]
 async fn main() {
-    service::server::http_main("0.0.0.0", 8000)
+    let settings = service::Settings::new();
+    service::server::http_main(settings)
         .await
         .expect("error to start service");
 }

@@ -1,14 +1,18 @@
-pub async fn http_main(bind: &str, port: u16) -> std::io::Result<()> {
+pub async fn http_main(settings: service::Settings) -> std::io::Result<()> {
     tracing_with_fmt();
 
     let listener = tokio::net::TcpListener::bind(std::net::SocketAddr::new(
-        bind.parse().expect("unexpected value for `bind` address"),
-        port,
+        settings
+            .bind
+            .parse()
+            .expect("unexpected value for `bind` address"),
+        settings.port,
     ))
     .await?;
 
-    tracing::info!("### Server started at: {} ###", port);
-    axum::serve(listener, crate::router::routes().await).await?;
+    let context = service::context::new(&settings);
+    tracing::info!("### Server started at: {} ###", settings.port);
+    axum::serve(listener, crate::router::routes(context).await).await?;
     Ok(())
 }
 
