@@ -49,5 +49,19 @@ pub async fn gen_text(api_key: &str, query: &str) -> Result<String, Box<dyn std:
     let response: GenTextResp =
         crate::http::post(url, &req, Some(&vec![("key", api_key)]), None).await?;
     tracing::info!(message = "response", ?response);
-    Ok("".to_string())
+    Ok(
+        response
+            .candidates
+            .into_iter()
+            .flat_map(|candidate| {
+                candidate
+                    .content
+                    .parts
+                    .into_iter()
+                    .map(|parts| parts.text)
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>()
+            .join("## Gemini multi part is coming"), // todo: may need to check the response if multiple is coming
+    )
 }

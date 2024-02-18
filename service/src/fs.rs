@@ -25,7 +25,7 @@ pub async fn create_if_not(path: &camino::Utf8Path) -> std::io::Result<tokio::fs
 }
 
 pub async fn create_dir_all(path: &camino::Utf8Path) -> std::io::Result<()> {
-    if !path.exists() && path.is_dir() {
+    if !path.exists() {
         tokio::fs::create_dir_all(path).await?;
     }
     Ok(())

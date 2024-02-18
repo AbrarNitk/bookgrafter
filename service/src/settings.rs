@@ -33,10 +33,21 @@ impl Settings {
             port: from_env_or("PORT", || "8000".to_string())
                 .parse()
                 .expect("unexpected `PORT` value"),
-            root: root.unwrap_or_else(|| camino::Utf8PathBuf::from("./directory")), // it will
+            root: create_root(root).expect("can not create the root"),
             gemini: GeminiSettings {
                 key: from_env("GEMINI_KEY"),
             },
         }
     }
+}
+
+fn create_root(root: Option<camino::Utf8PathBuf>) -> std::io::Result<camino::Utf8PathBuf> {
+    let root = match root {
+        Some(r) => r.canonicalize_utf8()?,
+        None => {
+            camino::Utf8PathBuf::from_path_buf(std::env::current_dir()?.join("directory")).unwrap()
+        }
+    };
+    std::fs::create_dir_all(root.as_path())?;
+    Ok(root)
 }
