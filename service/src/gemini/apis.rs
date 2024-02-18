@@ -48,20 +48,31 @@ pub async fn gen_text(api_key: &str, query: &str) -> Result<String, Box<dyn std:
     };
     let response: GenTextResp =
         crate::http::post(url, &req, Some(&vec![("key", api_key)]), None).await?;
-    tracing::info!(message = "response", ?response);
-    Ok(
-        response
-            .candidates
-            .into_iter()
-            .flat_map(|candidate| {
-                candidate
-                    .content
-                    .parts
-                    .into_iter()
-                    .map(|parts| parts.text)
-                    .collect::<Vec<_>>()
-            })
-            .collect::<Vec<_>>()
-            .join("## Gemini multi part is coming"), // todo: may need to check the response if multiple is coming
-    )
+
+    let resp = response
+        .candidates
+        .into_iter()
+        .flat_map(|candidate| {
+            candidate
+                .content
+                .parts
+                .into_iter()
+                .map(|parts| parts.text)
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>()
+        .join("## Gemini multi part is coming"); // todo: may need to check the response if multiple is coming
+
+    print_terminal(&resp);
+    Ok(resp)
+}
+
+fn print_terminal(src: &str) {
+    let mut skin = termimad::MadSkin::default_dark();
+    skin.code_block.align = termimad::Alignment::Right;
+    let (width, _) = termimad::terminal_size();
+    let terminal_width = width as usize;
+    let mut text = termimad::FmtText::from(&skin, src, Some(terminal_width));
+    text.set_rendering_width(text.content_width());
+    println!("{}", text);
 }

@@ -7,3 +7,11 @@
 - cli commands
   - serve
   - asking question and saving the answers
+
+## curl: To ask Question
+  
+```shell
+curl -X POST --header "Content-Type: application/json" \
+--data '{"query": "Hello World program in Rust?", "topic": "rust/hello"}' \
+http://127.0.0.1:8000/-/v1/api/chat/gemini/
+```
