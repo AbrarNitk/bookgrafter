@@ -1,8 +1,10 @@
 #[derive(serde::Deserialize, Debug)]
 pub struct ChatReq {
+    topic: Option<String>,
     query: String,
 }
-#[tracing::instrument(name = "gemini-chat", skip_all, fields (query = ?req.query))]
+
+#[tracing::instrument(name = "gemini-chat", skip_all, fields(query = ? req.query))]
 pub async fn chat(
     axum::extract::State(ctx): axum::extract::State<service::Ctx>,
     axum::Json(req): axum::Json<ChatReq>,

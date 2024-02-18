@@ -2,6 +2,7 @@ extern crate self as service;
 
 pub mod cli;
 pub mod context;
+pub mod fs;
 pub mod gemini;
 pub mod http;
 pub mod router;

@@ -5,6 +5,7 @@ pub struct GeminiSettings {
 pub struct Settings {
     pub bind: String,
     pub port: u16,
+    pub root: camino::Utf8PathBuf,
     pub(crate) gemini: GeminiSettings,
 }
 
@@ -26,12 +27,13 @@ fn from_env_or<F: FnOnce() -> String>(name: &str, f: F) -> String {
 }
 
 impl Settings {
-    pub fn new() -> Self {
+    pub fn new(root: Option<camino::Utf8PathBuf>) -> Self {
         Settings {
             bind: from_env_or("BIND", || "0.0.0.0".to_string()),
             port: from_env_or("PORT", || "8000".to_string())
                 .parse()
                 .expect("unexpected `PORT` value"),
+            root: root.unwrap_or_else(|| camino::Utf8PathBuf::from("./directory")), // it will
             gemini: GeminiSettings {
                 key: from_env("GEMINI_KEY"),
             },
