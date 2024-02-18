@@ -10,6 +10,6 @@ pub async fn routes() -> axum::Router {
         )
         .route(
             "/-/v1/api/chat/gemini/",
-            axum::routing::on(axum::routing::MethodFilter::GET, crate::gemini::chat),
+            axum::routing::on(axum::routing::MethodFilter::POST, crate::gemini::chat),
         )
 }
